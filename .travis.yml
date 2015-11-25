@@ -1,0 +1,14 @@
+sudo: false
+language: java
+addons:
+  apt:
+    packages:
+    - oracle-java8-installer
+script: ' if [ ${TRAVIS_PULL_REQUEST} = ''false'' ]; then echo "== MAIN build ==";
+  ./gradlew test uploadArchives; else echo "== PULL build =="; ./gradlew test; fi '
+jdk:
+- oraclejdk8
+env:
+  global:
+  - secure: cQwTEYR0OuKRMisc4d6ULZuV0eqTOdHZPx/GGnxjQo6OPkBEMwB8NSxx4TF77XMbmRXT1oOTgd0MYEzi0jV4kKu2OqlrCMWfcWBBsGVTVHVJe2j3nUqvGEvsEPPG2iAYh+jNzgPh9ekvBpejSUczt53KpYP4fQyIG4oJWGJG2hlkAjh1rgWPcpyF3hIFSY/PoRwgIG0jjV7Nw6HWxWRBkNimRz9GUcVvMJmVUCo/sUySxfPLtuwCSnWwAbYpxkSSJ+QJUajNY/BusAEnc1Jqe+aG9EoZUDVh5UhGZNpkRWg7q1QfEjyJhKH92xJETRxIWn0tUzjNIQmgY+2tVdPCJ63DQ/b/XH9v8psYWnOCQE3BwVNfiaezCh2srchZegdqckgrmmwqNFhlfthqcq+ztcxD08tUvWerZa0GVj0YNu7MnVHOShVBfEpw+VcLS9YbAKEcimA3A5pz1Y+7FUk2iweRgL4OksXkDD5UOT2XlbVt3R4rxC0twuVNj5t5tHnknLrw1Xat90t4PfhF0MqhnojdoR1P2pP3LlDcTWJ/Mn0+Y+TvtD4CXs/GLCHqQVBkuBQrCIR2fuIPnhNgiyoan5gjNwNV458GWXoAS99Qmo8iwmJ8Nd+rhT2Kj0J9Zuznt/B/1eYPoaxzUfCxaMky99QtacbhABej/j0euA5jb7U=
+  - secure: T53Ovi+s3sMISRUw8SGors7Tcq/BDSx/LoK5pjsgOCIQr3G3dSi9Iv6lwCraRs1uEjgkHz49FZReCo5Oi3d3voF2m3ESUR6leAK6biE4uU8ld4FJeRe4ppASAXMnr4Pk3MifsfxOWKDcJ67JhvHjsRD5tZB7LFEg1IJyf40vJeC48NO/FNinojGTY7q2t6fJhSPRC3exkKzUyIbrFdbJq9Ht7s+x7Dq5tu7V7Y57IqYeTW0X64Z2X8SoHCF/gVEx+45LxIis/Mq02jfB08r2zWJZSV0B6YHMORSpEYaC81wTJ1kAqAAE7ZoqLQzoIi0I8y6UkWF3OIdgB1fDvEz3u4F7EiFRvbPRzqjrWGg9Ow0IpEvobAzyul/tnyvWPraZSmIU21mKpNZAGPjLYde4STnyed/pTBAgwReJSv3YixzSCHM49GafSPYeNLpUdwcoyarUrrHVG3WNLrKkLuvk85QszU012rsLWBeWdD2JJpeNk2LcZKi3PXW/uR4yDLrTx2Yz3ZbzXP5R0q9BPmHDma1Ha3yFYKzkCVpQ1nB6pU8xdbWXaMQZcka1v2trPGtnK0GeehCnUhA0/Rf2E4m+sCq1vPpNr6Fa3zpIs9/We4g/6sLwYpcoCESk0EgCdQ+5qZjgEpDIINNFfIHEX8ZoK5JWHDv+rA4DG3qwoGZV6Nc=
