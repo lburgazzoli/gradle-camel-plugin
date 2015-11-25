@@ -1,0 +1,126 @@
+// *****************************************************************************
+// 
+// *****************************************************************************
+
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+        classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
+        classpath 'net.researchgate:gradle-release:2.3.4'
+    }
+}
+
+// *****************************************************************************
+//
+// *****************************************************************************
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'com.bmuschko.nexus'
+apply plugin: 'io.codearte.nexus-staging'
+apply plugin: 'net.researchgate.release'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+group               = 'com.github.lburgazzoli'
+description         = 'A gradle plugin to run Camel standalone<'
+
+ext {
+    gradleVersion    = '2.9'
+    gradleScriptDir  = "${rootProject.projectDir}/gradle"
+    isReleaseVersion = !version.endsWith("SNAPSHOT")
+    gitRoot          = "https://github.com/lburgazzoli"
+    gitProject       = "https://github.com/lburgazzoli/gradle-canel-plugin"
+
+    if(!project.hasProperty('nexusUsername') && !project.hasProperty('nexusPassword')) {
+        nexusUsername = "$System.env.CI_DEPLOY_USERNAME"
+        nexusPassword = "$System.env.CI_DEPLOY_PASSWORD"
+    }
+
+    versions = [
+        spock : '1.0-groovy-2.4'
+    ]
+}
+
+repositories {
+    mavenCentral()    
+    mavenLocal()
+    jcenter()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+
+    testCompile("org.spockframework:spock-core:$versions.spock") {
+        exclude(module: 'groovy-all')
+    }
+}
+
+jar {
+    baseName = "${project.name}"
+
+    manifest {
+        attributes['Implementation-Title'   ] = "${group}.${project.name}-${project.version}"
+        attributes['Implementation-Version' ] = project.version
+        attributes['Implementation-Vendor'  ] = 'lb'
+    }
+}
+
+// *****************************************************************************
+//
+// *****************************************************************************
+
+nexus {
+    sign = project.isReleaseVersion
+}
+
+extraArchive {
+    javadoc = true
+    sources = true
+    tests   = false
+}
+
+modifyPom {
+    project {
+        name          = "${project.name}"
+        description   = "${project.name}"
+        url           = "${project.gitProject}"
+        packaging     = 'jar'
+
+        licenses {
+            license {
+                name         = "The Apache Software License, Version 2.0"
+                url          = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "repo"
+            }
+        }
+
+        scm {
+            url                 = "${project.gitProject}"
+            connection          = "scm:git:${project.gitProject}.git"
+            developerConnection = "scm:git:${project.gitProject}.git"
+        }
+        
+        developers {
+            developer {
+                id 'lburgazzoli'
+                name 'Luca Burgazzoli'
+            }
+        }
+    }
+}
+
+afterReleaseBuild.dependsOn uploadArchives
+
+task nexusRelease(dependsOn: closeAndPromoteRepository) {
+    println "Release Repo"
+}
+
