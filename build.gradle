@@ -20,7 +20,7 @@ plugins {
     id 'java'
     id 'groovy'
     id 'maven'
-    id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.9.1'
     id 'com.bmuschko.nexus' version '2.3.1'
     id 'net.researchgate.release' version '2.3.4'
 }
@@ -30,7 +30,7 @@ apply plugin: 'io.codearte.nexus-staging'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 group               = 'com.github.lburgazzoli'
-description         = 'A gradle plugin to run Camel standalone<'
+description         = 'A gradle plugin to run Camel standalone'
 
 ext {
     gradleVersion    = '2.9'
@@ -92,7 +92,7 @@ extraArchive {
 modifyPom {
     project {
         name          = "${project.name}"
-        description   = "${project.name}"
+        description   = "${project.description}"
         url           = "${project.gitProject}"
         packaging     = 'jar'
 
@@ -119,9 +119,23 @@ modifyPom {
     }
 }
 
-afterReleaseBuild.dependsOn uploadArchives
+afterReleaseBuild.dependsOn uploadArchives, publishPlugins
 //closeAndPromoteRepository.dependsOn uploadArchives
 
 task nexusRelease(dependsOn: closeAndPromoteRepository) {
     println "Release"
+}
+
+pluginBundle {
+    website = "${project.gitProject}"
+    vcsUrl = "${project.gitProject}"
+    description = "${project.name}"
+    tags = [ 'camel' ]
+
+    plugins {
+        greetingsPlugin {
+            id = 'com.github.lburgazzoli.camel'
+            displayName = "${project.description}"
+        }
+    }
 }
