@@ -120,7 +120,8 @@ modifyPom {
 }
 
 afterReleaseBuild.dependsOn uploadArchives
+//closeAndPromoteRepository.dependsOn uploadArchives
 
 task nexusRelease(dependsOn: closeAndPromoteRepository) {
-    println "Release Repo"
+    println "Release"
 }
