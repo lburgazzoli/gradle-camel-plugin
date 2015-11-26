@@ -21,6 +21,7 @@ plugins {
     id 'groovy'
     id 'maven'
     id 'maven-publish'
+    id 'signing'
     id 'net.researchgate.release' version '2.3.4'
 }
 
@@ -78,6 +79,15 @@ jar {
 //
 // *****************************************************************************
 
+signing {
+    required {
+        isReleaseVersion && gradle.taskGraph.hasTask("publish")
+    }
+
+    sign configurations.archives
+}
+
+
 publishing {
     repositories {
         maven {
@@ -95,31 +105,27 @@ publishing {
     publications {
         camelPlugin(MavenPublication) {
             pom.withXml {
-                asNode().with {
-                    appendNode 'name', project.name
-                    appendNode 'description', project.name
-                    appendNode 'url', project.gitProject
-                    appendNode 'inceptionYear', project.inceptionYear
+                def root = asNode()
+                root.appendNode 'name', project.name
+                root.appendNode 'description', project.name
+                root.appendNode 'url', gitProject
+                root.appendNode 'inceptionYear', inceptionYear
 
-                    appendNode('scm').with {
-                        appendNode 'url', project.gitProject
-                        appendNode 'connection', "scm:git:${project.gitProject}.git"
-                        appendNode 'developerConnection', "scm:git:${project.gitProject}.git"
-                    }
+                def scm = root.appendNode('scm');
+                scm.appendNode 'url', project.gitProject
+                scm.appendNode 'connection', "scm:git:${project.gitProject}.git"
+                scm.appendNode 'developerConnection', "scm:git:${project.gitProject}.git"
 
-                    appendNode('licenses').appendNode('license').with {
-                        appendNode 'name', 'The Apache Software License, Version 2.0'
-                        appendNode 'url', 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        appendNode 'distribution', 'repo'
-                    }
+                def license = root.appendNode('licenses').appendNode('license')
+                license.appendNode 'name', 'The Apache Software License, Version 2.0'
+                license.appendNode 'url', 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                license.appendNode 'distribution', 'repo'
 
-                    appendNode('developers').with {
-                        appendNode('developer').with {
-                            appendNode 'id', 'lburgazzoli'
-                            appendNode 'name', 'Luca Burgazzoli'
-                        }
-                    }
-                }
+                def devs = root.appendNode('developers')
+
+                def lburgazzooli = devs.appendNode('developer')
+                lburgazzooli.appendNode 'id', 'lburgazzoli'
+                lburgazzooli.appendNode 'name', 'Luca Burgazzoli'
             }
         }
     }
