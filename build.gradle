@@ -21,7 +21,7 @@ plugins {
     id 'groovy'
     id 'maven'
     id 'maven-publish'
-    id 'signing'
+    id 'com.bmuschko.nexus' version '2.3.1'
     id 'net.researchgate.release' version '2.3.4'
 }
 
@@ -76,66 +76,50 @@ jar {
 }
 
 // *****************************************************************************
-//
+// PUBLISHING
 // *****************************************************************************
 
-signing {
-    required {
-        isReleaseVersion && gradle.taskGraph.hasTask("publish")
-    }
-
-    sign configurations.archives
+nexus {
+    sign = project.isReleaseVersion
 }
 
+extraArchive {
+    javadoc = true
+    sources = true
+    tests   = false
+}
 
-publishing {
-    repositories {
-        maven {
-            url isReleaseVersion ?
-                    'https://oss.sonatype.org/service/local/staging/deploy/maven2/' :
-                    'https://oss.sonatype.org/content/repositories/snapshots/'
+modifyPom {
+    project {
+        name          = "${project.name}"
+        description   = "${project.name}"
+        url           = "${project.gitProject}"
+        packaging     = 'jar'
 
-            credentials {
-                username nexusUsername
-                password nexusPassword
+        licenses {
+            license {
+                name         = "The Apache Software License, Version 2.0"
+                url          = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "repo"
             }
         }
-    }
 
-    publications {
-        camelPlugin(MavenPublication) {
-            pom.withXml {
-                def root = asNode()
-                root.appendNode 'name', project.name
-                root.appendNode 'description', project.name
-                root.appendNode 'url', gitProject
-                root.appendNode 'inceptionYear', inceptionYear
-
-                def scm = root.appendNode('scm');
-                scm.appendNode 'url', project.gitProject
-                scm.appendNode 'connection', "scm:git:${project.gitProject}.git"
-                scm.appendNode 'developerConnection', "scm:git:${project.gitProject}.git"
-
-                def license = root.appendNode('licenses').appendNode('license')
-                license.appendNode 'name', 'The Apache Software License, Version 2.0'
-                license.appendNode 'url', 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                license.appendNode 'distribution', 'repo'
-
-                def devs = root.appendNode('developers')
-
-                def lburgazzooli = devs.appendNode('developer')
-                lburgazzooli.appendNode 'id', 'lburgazzoli'
-                lburgazzooli.appendNode 'name', 'Luca Burgazzoli'
+        scm {
+            url                 = "${project.gitProject}"
+            connection          = "scm:git:${project.gitProject}.git"
+            developerConnection = "scm:git:${project.gitProject}.git"
+        }
+        
+        developers {
+            developer {
+                id 'lburgazzoli'
+                name 'Luca Burgazzoli'
             }
         }
     }
 }
 
-// *****************************************************************************
-//
-// *****************************************************************************
-
-afterReleaseBuild.dependsOn publish
+afterReleaseBuild.dependsOn uploadArchives
 
 task nexusRelease(dependsOn: closeAndPromoteRepository) {
     println "Release Repo"
