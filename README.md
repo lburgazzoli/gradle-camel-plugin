@@ -1,19 +1,9 @@
 # gradle-camel-plugin
 
 ```groovy
-buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.github.lburgazzoli:gradle-camel-plugin:0.0.6-SNAPSHOT'
-    }
+plugins {
+  id "com.github.lburgazzoli.camel" version "0.0.7"
 }
-
-apply plugin: 'com.github.lburgazzoli.camel'
 
 group 'com.github.lburgazzoli'
 version '1.0-SNAPSHOT'
