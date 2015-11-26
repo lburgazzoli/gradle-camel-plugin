@@ -5,14 +5,10 @@
 buildscript {
     repositories {
         mavenCentral()
-        mavenLocal()
-        jcenter()
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
         classpath 'io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3'
-        classpath 'net.researchgate:gradle-release:2.3.4'
     }
 }
 
@@ -20,12 +16,15 @@ buildscript {
 //
 // *****************************************************************************
 
-apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'maven'
-apply plugin: 'com.bmuschko.nexus'
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'maven'
+    id 'net.researchgate.release' version '2.3.4'
+    id 'com.bmuschko.nexus' version '2.3.1'
+}
+
 apply plugin: 'io.codearte.nexus-staging'
-apply plugin: 'net.researchgate.release'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -37,7 +36,7 @@ ext {
     gradleScriptDir  = "${rootProject.projectDir}/gradle"
     isReleaseVersion = !version.endsWith("SNAPSHOT")
     gitRoot          = "https://github.com/lburgazzoli"
-    gitProject       = "https://github.com/lburgazzoli/gradle-canel-plugin"
+    gitProject       = "https://github.com/lburgazzoli/${project.name}"
 
     if(!project.hasProperty('nexusUsername') && !project.hasProperty('nexusPassword')) {
         nexusUsername = "$System.env.CI_DEPLOY_USERNAME"

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.github.lburgazzoli.gradle.plugin.camel
 
 import org.gradle.api.Plugin
@@ -40,6 +39,6 @@ class CamelPlugin implements Plugin<Project> {
 
         run.description = "Run the project"
         run.group = "application"
-        run.classpath = javaConvention.getSourceSets().findByName("main").getRuntimeClasspath()
+        run.classpath = javaConvention.sourceSets.findByName("main").runtimeClasspath
     }
 }

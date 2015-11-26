@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.github.lburgazzoli.gradle.plugin.camel
 
 import org.gradle.api.tasks.JavaExec
@@ -25,60 +24,55 @@ import org.gradle.util.ConfigureUtil
 class CamelRunTask extends JavaExec {
     public static final TASK_NAME = "camelRun"
 
-    private SubsystemConfig config
+    private Loader loader
 
     boolean trace
     String duration
-    //boolean useCdi
-
 
     CamelRunTask() {
-        //this.useCdi = false
-
         this.trace = false
         this.duration = "-1"
-        this.config = null
+        this.loader = null
     }
 
-    public void springConfig(Closure closure) {
-        ConfigureUtil.configure( closure, this.config = new SpringConfig())
+    public void spring(Closure closure) {
+        ConfigureUtil.configure( closure, this.loader = new SpringLoader())
     }
 
     public void springJavaConfig(Closure closure) {
-        ConfigureUtil.configure( closure, this.config = new SpringJavaConfig())
+        ConfigureUtil.configure( closure, this.loader = new SpringJavaLoader())
     }
 
-    public void blueprintConfig(Closure closure) {
-        ConfigureUtil.configure( closure, this.config = new BlueprintConfig())
+    public void blueprint(Closure closure) {
+        ConfigureUtil.configure( closure, this.loader = new BlueprintLoader())
     }
 
-    public void cdiConfig(Closure closure) {
-        ConfigureUtil.configure( closure, this.config = new CdiConfig())
+    public void cdi(Closure closure) {
+        ConfigureUtil.configure( closure, this.loader = new CdiLoader())
     }
 
     @Override
     public void exec() {
 
-        def subs = null
-        def appClass = main()
-        def appArgs = []
+        def loaderClass = getMain()
+        def loaderArgs = []
 
-        if(!appClass) {
+        if(! loaderClass) {
             if(this.trace) {
-                appArgs.add('-t')
+                loaderArgs.add('-t')
             }
 
-            appArgs.add('-d')
-            appArgs.add(duration)
+            loaderArgs.add('-d')
+            loaderArgs.add(duration)
 
-            if(this.config) {
-                appClass = this.config.main()
-                appArgs.addAll(this.config.args())
+            if(this.loader) {
+                loaderClass = this.loader.main
+                loaderArgs.addAll(this.loader.args)
             }
         }
 
-        setMain(appClass)
-        setArgs(getArgs() + appArgs)
+        setMain(loaderClass)
+        setArgs(getArgs() + loaderArgs)
 
         super.exec();
     }
@@ -87,33 +81,34 @@ class CamelRunTask extends JavaExec {
     //
     // *************************************************************************
 
-    private abstract class SubsystemConfig {
-        private String main = null;
-        private List<String> args = []
+    private abstract class Loader {
+        private String mainClass
+        private List<String> args
 
-        protected SubsystemConfig(String main) {
-            this.main = main
+        protected Loader(String mainClass) {
+            this.mainClass = mainClass
+            this.args = []
         }
 
-        public String main() {
-            return main
+        public String getMain() {
+            return mainClass
         }
 
-        public Collection<String> args() {
+        public Collection<String> getArgs() {
             args.clear()
             fillArgs(args)
 
             return args
         }
 
-        protected addArg(Collection<String> args, String option, String value) {
+        protected void addArg(Collection<String> args, String option, String value) {
             if(value) {
                 args.add(option)
                 args.add(value)
             }
         }
 
-        protected addArg(Collection<String> args, String option, Collection<String> values) {
+        protected void addArg(Collection<String> args, String option, Collection<String> values) {
             if(values) {
                 args.add(option)
                 args.addAll(values)
@@ -123,11 +118,11 @@ class CamelRunTask extends JavaExec {
         protected abstract void fillArgs(Collection<String> args)
     }
 
-    private final class SpringConfig extends SubsystemConfig {
+    private final class SpringLoader extends Loader {
         String applicationContextUri = null
         String fileApplicationContextUri = null
 
-        public SpringConfig() {
+        public SpringLoader() {
             super('org.apache.camel.spring.Main')
         }
 
@@ -138,11 +133,11 @@ class CamelRunTask extends JavaExec {
         }
     }
 
-    private final class SpringJavaConfig extends SubsystemConfig {
+    private final class SpringJavaLoader extends Loader {
         private Set<String> configClasses = new LinkedHashSet<>()
         private Set<String> basePackages = new LinkedHashSet<>()
 
-        public SpringJavaConfig() {
+        public SpringJavaLoader() {
             super('org.apache.camel.spring.javaconfig.Main')
         }
 
@@ -161,11 +156,11 @@ class CamelRunTask extends JavaExec {
         }
     }
 
-    private final class BlueprintConfig extends SubsystemConfig {
+    private final class BlueprintLoader extends Loader {
         String configAdminPid = null
         String configAdminFileName = null
 
-        public BlueprintConfig() {
+        public BlueprintLoader() {
             super('org.apache.camel.test.blueprint.Main')
         }
 
@@ -176,9 +171,9 @@ class CamelRunTask extends JavaExec {
         }
     }
 
-    private final class CdiConfig extends SubsystemConfig {
+    private final class CdiLoader extends Loader {
 
-        public CdiConfig() {
+        public CdiLoader() {
             super('org.apache.camel.cdi.Main')
         }
 

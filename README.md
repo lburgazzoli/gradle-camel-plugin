@@ -57,13 +57,13 @@ camelRun {
         configClass 'com.github.lburgazzoli.gradle.plugin.examples.camel.MySpringRouteConfiguration'
     }
 
-    //springConfig {
+    //spring {
     //}
 
-    //blueprintConfig {
+    //blueprint {
     //}
 
-    //cdiConfig {
+    //cdi {
     //}
 
     jvmArgs = [
