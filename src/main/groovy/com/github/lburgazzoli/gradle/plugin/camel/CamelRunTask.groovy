@@ -15,9 +15,9 @@
  */
 package com.github.lburgazzoli.gradle.plugin.camel
 
+import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.api.tasks.JavaExec
 import org.gradle.util.ConfigureUtil
-
 /**
  * @author lburgazzoli
  */
@@ -56,6 +56,7 @@ class CamelRunTask extends JavaExec {
 
         def loaderClass = getMain()
         def loaderArgs = []
+        def loaderCp = []
 
         if(! loaderClass) {
             if(this.trace) {
@@ -67,12 +68,20 @@ class CamelRunTask extends JavaExec {
 
             if(this.loader) {
                 loaderClass = this.loader.main
+                loaderCp = this.loader.classPath
                 loaderArgs.addAll(this.loader.args)
+
             }
         }
 
         setMain(loaderClass)
-        setArgs(getArgs() + loaderArgs)
+
+        if(loaderArgs) {
+            setArgs(getArgs() + loaderArgs)
+        }
+        if(loaderCp) {
+            setClasspath(getClasspath() + new SimpleFileCollection(loaderCp))
+        }
 
         super.exec();
     }
@@ -84,10 +93,12 @@ class CamelRunTask extends JavaExec {
     private abstract class Loader {
         private String mainClass
         private List<String> args
+        private List<File> classPath
 
         protected Loader(String mainClass) {
             this.mainClass = mainClass
             this.args = []
+            this.classPath = []
         }
 
         public String getMain() {
@@ -99,6 +110,13 @@ class CamelRunTask extends JavaExec {
             fillArgs(args)
 
             return args
+        }
+
+        public Collection<File> getClassPath() {
+            classPath.clear()
+            fillClasspath(classPath)
+
+            return classPath
         }
 
         protected void addArg(Collection<String> args, String option, String value) {
@@ -115,8 +133,13 @@ class CamelRunTask extends JavaExec {
             }
         }
 
-        protected abstract void fillArgs(Collection<String> args)
+        protected void fillArgs(Collection<String> args) {
+        }
+
+        protected void fillClasspath(Collection<File> classpath) {
+        }
     }
+
 
     private final class SpringLoader extends Loader {
         String applicationContextUri = null
@@ -172,13 +195,29 @@ class CamelRunTask extends JavaExec {
     }
 
     private final class CdiLoader extends Loader {
+        private List<File> additionalClasspath
 
         public CdiLoader() {
             super('org.apache.camel.cdi.Main')
+
+            this.additionalClasspath = []
+        }
+
+        public void additionalPath(File path) {
+            additionalClasspath.add(path)
+        }
+
+        public void additionalPath(String path) {
+            additionalClasspath.add(new File(path))
         }
 
         @Override
         protected void fillArgs(Collection<String> args) {
+        }
+
+        @Override
+        protected void fillClasspath(Collection<File> classpath) {
+            classpath.addAll(additionalClasspath)
         }
     }
 }

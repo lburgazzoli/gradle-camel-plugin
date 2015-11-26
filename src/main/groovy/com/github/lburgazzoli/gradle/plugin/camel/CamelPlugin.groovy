@@ -17,6 +17,7 @@ package com.github.lburgazzoli.gradle.plugin.camel
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
 
 /**
@@ -25,18 +26,23 @@ import org.gradle.api.plugins.JavaPluginConvention
 class CamelPlugin implements Plugin<Project> {
     public static final String PLUGIN_ID = 'com.github.lburgazzoli.camel'
     public static final String EXTENSION_NAME = 'camel'
+    public static final String JAR_TASK = 'jar'
 
     @Override
     void apply(Project project) {
+        project.getPluginManager().apply(JavaPlugin.class);
+
         //CamelPluginExtension extension = project.extensions.create( EXTENSION_NAME, CamelPluginExtension, project )
 
         addCamelRunTask(project)
     }
 
     private void addCamelRunTask(Project project) {
-        final JavaPluginConvention javaConvention = project.convention.getPlugin(JavaPluginConvention.class)
+        final JavaPluginConvention javaConvention = project.convention.getPlugin(JavaPluginConvention.class);
+        //final Jar jarTask = (Jar) project.getTasks().findByName(JAR_TASK);
         final CamelRunTask run = project.tasks.create(CamelRunTask.TASK_NAME, CamelRunTask.class)
 
+        //run.dedependsOn.add(jarTask)
         run.description = "Run the project"
         run.group = "application"
         run.classpath = javaConvention.sourceSets.findByName("main").runtimeClasspath
