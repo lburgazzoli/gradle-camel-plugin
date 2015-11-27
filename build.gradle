@@ -35,6 +35,8 @@ description         = 'A gradle plugin to run Camel standalone'
 ext {
     gradleVersion    = '2.9'
     gradleScriptDir  = "${rootProject.projectDir}/gradle"
+    gradlePluginId   = "com.github.lburgazzoli.camel"
+    gradlePluginTags = [ 'camel' ]
     isReleaseVersion = !version.endsWith("SNAPSHOT")
     gitRoot          = "https://github.com/lburgazzoli"
     gitProject       = "https://github.com/lburgazzoli/${project.name}"
@@ -91,9 +93,10 @@ extraArchive {
 
 modifyPom {
     project {
-        name          = "${project.name}"
-        description   = "${project.description}"
-        url           = "${project.gitProject}"
+        name          = project.name
+        description   = project.name
+        url           = project.gitProject
+        packaging     = 'jar'
         packaging     = 'jar'
 
         licenses {
@@ -105,7 +108,7 @@ modifyPom {
         }
 
         scm {
-            url                 = "${project.gitProject}"
+            url                 = project.gitProject
             connection          = "scm:git:${project.gitProject}.git"
             developerConnection = "scm:git:${project.gitProject}.git"
         }
@@ -119,23 +122,27 @@ modifyPom {
     }
 }
 
-afterReleaseBuild.dependsOn uploadArchives, publishPlugins
-//closeAndPromoteRepository.dependsOn uploadArchives
-
-task nexusRelease(dependsOn: closeAndPromoteRepository) {
-    println "Release"
-}
-
 pluginBundle {
-    website = "${project.gitProject}"
-    vcsUrl = "${project.gitProject}"
-    description = "${project.name}"
-    tags = [ 'camel' ]
+    website     = project.gitProject
+    vcsUrl      = project.gitProject
+    description = project.name
+    tags        = gradlePluginTags
 
     plugins {
         greetingsPlugin {
-            id = 'com.github.lburgazzoli.camel'
-            displayName = "${project.description}"
+            id          = gradlePluginId
+            displayName = project.description
         }
     }
+}
+
+// *****************************************************************************
+//
+// *****************************************************************************
+
+afterReleaseBuild.dependsOn uploadArchives, publishPlugins
+//closeAndPromoteRepository.dependsOn uploadArchives
+
+task promote(dependsOn: closeAndPromoteRepository) {
+    println "Release"
 }

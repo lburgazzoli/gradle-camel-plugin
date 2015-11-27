@@ -113,10 +113,15 @@ class CamelRunTask extends JavaExec {
         }
 
         public Collection<File> getClassPath() {
-            classPath.clear()
-            fillClasspath(classPath)
-
             return classPath
+        }
+
+        public void additionalPath(File path) {
+            classPath.add(path)
+        }
+
+        public void additionalPath(String path) {
+            classPath.add(new File(path))
         }
 
         protected void addArg(Collection<String> args, String option, String value) {
@@ -134,9 +139,6 @@ class CamelRunTask extends JavaExec {
         }
 
         protected void fillArgs(Collection<String> args) {
-        }
-
-        protected void fillClasspath(Collection<File> classpath) {
         }
     }
 
@@ -195,29 +197,8 @@ class CamelRunTask extends JavaExec {
     }
 
     private final class CdiLoader extends Loader {
-        private List<File> additionalClasspath
-
         public CdiLoader() {
             super('org.apache.camel.cdi.Main')
-
-            this.additionalClasspath = []
-        }
-
-        public void additionalPath(File path) {
-            additionalClasspath.add(path)
-        }
-
-        public void additionalPath(String path) {
-            additionalClasspath.add(new File(path))
-        }
-
-        @Override
-        protected void fillArgs(Collection<String> args) {
-        }
-
-        @Override
-        protected void fillClasspath(Collection<File> classpath) {
-            classpath.addAll(additionalClasspath)
         }
     }
 }
