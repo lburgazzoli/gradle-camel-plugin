@@ -28,7 +28,7 @@ import javax.swing.text.html.parser.TagElement
  * @see "org.apache.camel.maven.JavadocParser"
  *
  */
-public class JavadocParser extends Parser {
+public class ApiJavadocParser extends Parser {
 
     private static final String NON_BREAKING_SPACE = "\u00A0";
     private static final String JAVA6_NON_BREAKING_SPACE = "&nbsp";
@@ -43,7 +43,7 @@ public class JavadocParser extends Parser {
     private StringBuilder methodTextBuilder;
     private String errorMessage;
 
-    public JavadocParser(DTD dtd, String docPath) {
+    public ApiJavadocParser(DTD dtd, String docPath) {
         super(dtd);
 
         this.hrefPattern = docPath + "#";
