@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.lburgazzoli.gradle.plugin.camel
+package com.github.lburgazzoli.gradle.plugin.camel.task
 
 import org.gradle.api.internal.file.collections.SimpleFileCollection
 import org.gradle.api.tasks.JavaExec
 import org.gradle.util.ConfigureUtil
+
 /**
  * @author lburgazzoli
  */
 class CamelRunTask extends JavaExec {
-    public static final TASK_NAME = "camelRun"
+    public static final NAME = "camelRun"
 
     private Loader loader
 

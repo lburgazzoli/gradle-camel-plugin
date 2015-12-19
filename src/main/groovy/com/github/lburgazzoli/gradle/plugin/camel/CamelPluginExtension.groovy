@@ -15,8 +15,36 @@
  */
 package com.github.lburgazzoli.gradle.plugin.camel
 
+import com.github.lburgazzoli.gradle.plugin.camel.model.component.ApiComponent
+import org.gradle.api.Project
+import org.gradle.util.ConfigureUtil
+
+import java.util.regex.Pattern
+
 /**
  * @author lburgazzoli
  */
 class CamelPluginExtension {
+    public static final String NAME = 'camel'
+
+    private static final String  DEFAULT_EXCLUDE_PACKAGES = "javax?\\.lang.*";
+    private static final Pattern RAW_ARGTYPES_PATTERN = Pattern.compile("\\s*([^<\\s,]+)\\s*(<[^>]+>)?\\s*,?");
+
+    private List<ApiComponent> compnents = []
+
+    void component(Closure closure) {
+        compnents << ConfigureUtil.configure(closure, new ApiComponent())
+    }
+
+    // *************************************************************************
+    // Helpers
+    // *************************************************************************
+
+    public static CamelPluginExtension lookup(Project project) {
+        return project.extensions.findByName(NAME) as CamelPluginExtension
+    }
+
+    public static CamelPluginExtension create(Project project) {
+        return project.extensions.create( NAME, CamelPluginExtension, project )
+    }
 }

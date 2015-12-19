@@ -14,34 +14,46 @@
  * limitations under the License.
  */
 package com.github.lburgazzoli.gradle.plugin.camel
+
+import com.github.lburgazzoli.gradle.plugin.camel.task.CamelApiComponentTask
+import com.github.lburgazzoli.gradle.plugin.camel.task.CamelRunTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginConvention
+
 /**
  * @author lburgazzoli
  */
 class CamelPlugin implements Plugin<Project> {
-    public static final String PLUGIN_ID = 'com.github.lburgazzoli.camel'
-    public static final String EXTENSION_NAME = 'camel'
-    public static final String JAR_TASK = 'jar'
+    static {
+        // set Java AWT to headless before using Swing HTML parser
+        System.setProperty("java.awt.headless", "true");
+    }
 
     @Override
     void apply(Project project) {
         project.getPluginManager().apply(JavaPlugin.class);
 
-        //CamelPluginExtension extension = project.extensions.create( EXTENSION_NAME, CamelPluginExtension, project )
+        CamelPluginExtension extension = CamelPluginExtension.create(project)
 
         addCamelRunTask(project)
+        addCamelApiFrameworkTask(project)
     }
 
     private void addCamelRunTask(Project project) {
-        final JavaPluginConvention javaConvention = project.convention.getPlugin(JavaPluginConvention.class);
-        final CamelRunTask run = project.tasks.create(CamelRunTask.TASK_NAME, CamelRunTask.class)
+        def javaConvention = project.convention.getPlugin(JavaPluginConvention.class);
+        def task = project.tasks.create(CamelRunTask.NAME, CamelRunTask.class)
 
-        run.dependsOn.add(project.getTasks().findByName(JAR_TASK))
-        run.description = "Run the project"
-        run.group = "application"
-        run.classpath = javaConvention.sourceSets.findByName("main").runtimeClasspath
+        task.dependsOn.add(project.getTasks().findByName('jar'))
+        task.description = "Run the project"
+        task.group = "camel"
+        task.classpath = javaConvention.sourceSets.findByName("main").runtimeClasspath
+    }
+
+    private void addCamelApiFrameworkTask(Project project) {
+        def task = project.tasks.create(CamelApiComponentTask.NAME, CamelRunTask.class)
+        task.description = "Generate Component"
+        task.group = "camel"
     }
 }
