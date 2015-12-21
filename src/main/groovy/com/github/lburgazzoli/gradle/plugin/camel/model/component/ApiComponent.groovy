@@ -21,7 +21,7 @@ import org.gradle.util.ConfigureUtil
  * @author lburgazzoli
  */
 class ApiComponent {
-    private final Api apis = []
+    private final List<Api> apis = []
 
     String outPackage
     String scheme
@@ -30,5 +30,9 @@ class ApiComponent {
 
     void api(Closure closure) {
         apis << ConfigureUtil.configure(closure, new Api())
+    }
+
+    public List<Api> getApis() {
+        return Collections.unmodifiableList(this.apis)
     }
 }

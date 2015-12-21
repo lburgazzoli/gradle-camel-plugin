@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.github.lburgazzoli.gradle.plugin.camel.model.component
 
 /**
  * @author lburgazzoli
  */
-class ApiJavadoc {
-    private List<ApiMethodDescriptor> descriptors
+class ApiMethodDescriptor {
+    String name
+    List<String> argNames
+    List<Class<?>> argTypes
 
-    public ApiJavadoc() {
-        descriptors = []
+    public ApiMethodDescriptor() {
+        this.name = null
+        this.argNames = []
+        this.argTypes = []
     }
 
-    void filter(Closure closure) {
-        descriptors.removeAll(closure)
-    }
+    void argument(String name, Class<?> type) {
+        assert this.argNames.size() == this.argTypes.size()
 
-    void map(Closure closure) {
-        descriptors.forEach(closure)
-    }
-
-    protected List<ApiMethodDescriptor> getDescriptors() {
-        return this.descriptors
+        this.argNames << name
+        this.argTypes << type
     }
 }

@@ -21,12 +21,26 @@ import org.gradle.util.ConfigureUtil
  * @author lburgazzoli
  */
 class Api {
-    private ApiJavadoc javadoc = null
+    private final List<ApiMethodDescriptor> descriptors = []
 
     public String apiName
     public String proxyClass
 
+    public Api() {
+        this.apiName = null
+        this.proxyClass = null
+        this.descriptors = []
+    }
+
     void fromJavadoc(Closure closure) {
-        javadoc = ConfigureUtil.configure(closure, new ApiJavadoc())
+        descriptors.addAll(ConfigureUtil.configure(closure, new ApiJavadoc()).descriptors)
+    }
+
+    void method(Closure closure) {
+        descriptors.add(ConfigureUtil.configure(closure, new ApiMethodDescriptor()))
+    }
+
+    public List<ApiMethodDescriptor> getDescriptos() {
+        return Collections.unmodifiableList(descriptors)
     }
 }
