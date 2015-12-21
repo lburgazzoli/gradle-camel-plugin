@@ -26,6 +26,8 @@ import org.gradle.api.plugins.JavaPluginConvention
  * @author lburgazzoli
  */
 class CamelPlugin implements Plugin<Project> {
+    public static final String CONFIGURATION_NAME = 'camelComponent'
+
     static {
         // set Java AWT to headless before using Swing HTML parser
         System.setProperty("java.awt.headless", "true");
@@ -35,7 +37,8 @@ class CamelPlugin implements Plugin<Project> {
     void apply(Project project) {
         project.getPluginManager().apply(JavaPlugin.class);
 
-        CamelPluginExtension extension = CamelPluginExtension.create(project)
+        def configuration = project.configurations.maybeCreate( CONFIGURATION_NAME )
+        def extension = CamelPluginExtension.create(project)
 
         addCamelRunTask(project)
         addCamelApiFrameworkTask(project)

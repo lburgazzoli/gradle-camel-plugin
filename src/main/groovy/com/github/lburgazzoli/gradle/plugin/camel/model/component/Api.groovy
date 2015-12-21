@@ -23,12 +23,12 @@ import org.gradle.util.ConfigureUtil
 class Api {
     private final List<ApiMethodDescriptor> descriptors = []
 
-    public String apiName
-    public String proxyClass
+    public String name
+    public String type
 
     public Api() {
-        this.apiName = null
-        this.proxyClass = null
+        this.name = null
+        this.type = null
         this.descriptors = []
     }
 
@@ -40,7 +40,7 @@ class Api {
         descriptors.add(ConfigureUtil.configure(closure, new ApiMethodDescriptor()))
     }
 
-    public List<ApiMethodDescriptor> getDescriptos() {
+    public List<ApiMethodDescriptor> getDescriptors() {
         return descriptors.asImmutable()
     }
 }

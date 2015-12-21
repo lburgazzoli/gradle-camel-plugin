@@ -15,6 +15,7 @@
  */
 package com.github.lburgazzoli.gradle.plugin.camel.model.component
 
+import org.gradle.api.artifacts.Configuration
 import org.gradle.util.ConfigureUtil
 
 /**
@@ -27,6 +28,7 @@ class ApiComponent {
     String scheme
     String componentName
     String componentPackage
+    Configuration configuration
 
     void api(Closure closure) {
         apis << ConfigureUtil.configure(closure, new Api())

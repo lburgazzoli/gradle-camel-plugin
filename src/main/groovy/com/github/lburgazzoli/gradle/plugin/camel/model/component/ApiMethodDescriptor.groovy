@@ -16,24 +16,27 @@
 
 package com.github.lburgazzoli.gradle.plugin.camel.model.component
 
+import org.gradle.util.ConfigureUtil
 /**
  * @author lburgazzoli
  */
 class ApiMethodDescriptor {
     String name
-    List<String> argNames
-    List<Class<?>> argTypes
+    String returnType
+    List<ArgumentDescriptor> arguments
 
     public ApiMethodDescriptor() {
         this.name = null
-        this.argNames = []
-        this.argTypes = []
+        this.arguments = []
+        this.returnType = null
     }
 
-    void argument(String name, Class<?> type) {
-        assert this.argNames.size() == this.argTypes.size()
+    void argument(Closure closure) {
+        arguments << ConfigureUtil.configure(closure, new ArgumentDescriptor())
+    }
 
-        this.argNames << name
-        this.argTypes << type
+    class ArgumentDescriptor {
+        String name
+        String type
     }
 }

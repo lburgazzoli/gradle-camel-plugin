@@ -14,42 +14,57 @@
  * limitations under the License.
  */
 
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'maven'
+}
+
+dependencies {
+    camelComponent 'com.braintreepayments.gateway:braintree-java:2.53.0:javadoc'
+}
+
+
 camel {
     component {
-        componentName    = 'braintree'
-        componentPackage = 'org.apache.camel.component.braintree'
         scheme           = 'braintree'
-        outPackage       = ''
+        componentName    = 'Braintree'
+        componentPackage = 'org.apache.camel.component.braintree'
+        outPackage       = 'org.apache.camel.component.braintree.internal'
+        configuration    = project.configurations.camelComponent
+
+//
+//        api {
+//            apiName  = 'create'
+//            apiClass = 'com.braintreegateway.CustomerGateway'
+//
+//            fromJavadoc {
+//                filter {
+//                    //it.name ==~ /.*test.*/
+//                }
+//
+//                map {
+//                    switch(it.name) {
+//                        case 'getField1' :
+//                            it.name = 'getFieldWithArgs'
+//                            break
+//                    }
+//                }
+//            }
+//        }
 
         api {
-            apiName    = 'create'
-            proxyClass = 'com.braintreegateway.CustomerGateway'
-
-            fromJavadoc {
-                filter {
-                    it.name ==~ /.*test.*/
-                }
-
-                map {
-                    switch(it.name) {
-                        case 'getField1' :
-                            it.name = 'getFieldWithArgs'
-                            break
-                    }
-                }
-            }
-        }
-
-        api {
-            apiName    = 'findInRange'
-            proxyClass = 'com.braintreegateway.AddOnGateway'
+            name = 'gateway'
+            type = 'com.braintreegateway.CustomerGateway'
 
             method {
-                name = 'all'
+                name       = 'create'
+                returnType = 'com.braintreegateway.Result'
 
-                argument 'id', String.class
-                argument 'rangeStart', Integer.class
-                argument 'rangeEnd', Integer.class
+                argument {
+                    name = 'request'
+                    type = 'com.braintreegateway.CustomerRequest'
+                }
             }
         }
     }
