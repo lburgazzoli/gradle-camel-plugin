@@ -41,6 +41,6 @@ class Api {
     }
 
     public List<ApiMethodDescriptor> getDescriptos() {
-        return Collections.unmodifiableList(descriptors)
+        return descriptors.asImmutable()
     }
 }

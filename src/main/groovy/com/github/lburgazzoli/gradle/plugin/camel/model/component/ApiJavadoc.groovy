@@ -34,6 +34,6 @@ class ApiJavadoc {
     }
 
     protected List<ApiMethodDescriptor> getDescriptors() {
-        return this.descriptors
+        return descriptors
     }
 }

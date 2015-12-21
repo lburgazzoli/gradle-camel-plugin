@@ -33,6 +33,6 @@ class ApiComponent {
     }
 
     public List<Api> getApis() {
-        return Collections.unmodifiableList(this.apis)
+        return apis.asImmutable()
     }
 }
