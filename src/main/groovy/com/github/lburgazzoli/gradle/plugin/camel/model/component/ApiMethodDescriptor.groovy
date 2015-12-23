@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.github.lburgazzoli.gradle.plugin.camel.model.component
 
 import org.gradle.util.ConfigureUtil
+
 /**
  * @author lburgazzoli
  */
@@ -33,6 +33,10 @@ class ApiMethodDescriptor {
 
     void argument(Closure closure) {
         arguments << ConfigureUtil.configure(closure, new ArgumentDescriptor())
+    }
+
+    List<ArgumentDescriptor> getArguments() {
+        return arguments.asImmutable()
     }
 
     class ArgumentDescriptor {

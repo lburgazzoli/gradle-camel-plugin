@@ -30,9 +30,11 @@ class CamelPluginExtension {
     private static final String  DEFAULT_EXCLUDE_PACKAGES = "javax?\\.lang.*";
     private static final Pattern RAW_ARGTYPES_PATTERN = Pattern.compile("\\s*([^<\\s,]+)\\s*(<[^>]+>)?\\s*,?");
 
+    private final Project project
     private final List<ApiComponent> components
 
-    public CamelPluginExtension() {
+    public CamelPluginExtension(Project project) {
+        this.project = project
         this.components = []
     }
 

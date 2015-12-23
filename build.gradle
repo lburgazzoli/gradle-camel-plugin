@@ -46,8 +46,10 @@ ext {
     }
 
     versions = [
-        spock    : '1.0-groovy-2.4',
-        javaPoet : '1.4.0'
+        spock       : '1.0-groovy-2.4',
+        javaPoet    : '1.4.0',
+        tagsoup     : '1.2.1',
+        commonsLang : '3.4'
     ]
 }
 
@@ -62,6 +64,8 @@ dependencies {
     compile localGroovy()
 
     compile "com.squareup:javapoet:$versions.javaPoet"
+    compile "org.ccil.cowan.tagsoup:tagsoup:$versions.tagsoup"
+    compile "org.apache.commons:commons-lang3:$versions.commonsLang"
 
     testCompile("org.spockframework:spock-core:$versions.spock") {
         exclude(module: 'groovy-all')

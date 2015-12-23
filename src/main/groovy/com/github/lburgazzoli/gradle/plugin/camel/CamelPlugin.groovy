@@ -55,7 +55,7 @@ class CamelPlugin implements Plugin<Project> {
     }
 
     private void addCamelApiFrameworkTask(Project project) {
-        def task = project.tasks.create(CamelApiComponentTask.NAME, CamelRunTask.class)
+        def task = project.tasks.create(CamelApiComponentTask.NAME, CamelApiComponentTask.class)
         task.description = "Generate Component"
         task.group = "camel"
     }
