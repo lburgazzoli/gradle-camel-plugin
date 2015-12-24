@@ -15,7 +15,6 @@
  */
 package com.github.lburgazzoli.gradle.plugin.camel.task
 import com.github.lburgazzoli.gradle.plugin.camel.CamelPluginExtension
-import org.apache.commons.lang3.StringUtils
 import org.ccil.cowan.tagsoup.Parser
 import org.gradle.api.DefaultTask
 import org.gradle.api.artifacts.Configuration
@@ -38,10 +37,10 @@ class CamelApiComponentTask extends DefaultTask {
             println("$component.componentName")
 
             component.apis.each { api ->
-                def node = getJavadocContent(component.configuration, api.type)
-                if(node) {
-                    dumpNodes(node, 0)
-                }
+                def root = parseJavadoc(component.configuration, api.type)
+                def methods = findMethodSummary(root)
+
+                println "run >> ${methods.parent()}"
             }
 
 
@@ -59,7 +58,7 @@ class CamelApiComponentTask extends DefaultTask {
         }
     }
 
-    def getJavadocContent(Configuration configuration, String className) {
+    def parseJavadoc(Configuration configuration, String className) {
         String path = className.replace('.', '/') + ".html"
 
         for(ResolvedArtifact artifact : configuration.resolvedConfiguration.resolvedArtifacts) {
@@ -76,13 +75,15 @@ class CamelApiComponentTask extends DefaultTask {
         return null
     }
 
-    def dumpNodes(def root, int depth) {
-        println "${StringUtils.leftPad('.', depth)}  ${root.name()} ${root.text()}"
-
-        root.children().each {
-            dumpNodes(it, depth + 2)
+    def findMethodSummary(def root) {
+        def attrName = root.attributes()['name']
+        if(attrName && (attrName.equals('method_summary') || attrName.equals('method.summary'))) {
+            return root
         }
 
+        return root.childNodes().find {
+            findMethodSummary(it) != null
+        }
     }
 
     def CamelPluginExtension getExtension() {
